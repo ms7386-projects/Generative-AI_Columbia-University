@@ -1,0 +1,39 @@
+{
+  "seed": 42,
+  "epochs": 5,
+  "batch_size": 128,
+  "learning_rate": 0.001,
+  "train_samples": 45000,
+  "validation_samples": 5000,
+  "test_samples": 10000,
+  "best_epoch": 5,
+  "best_validation_accuracy": 0.6568,
+  "test_accuracy": 0.65,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.4823117303848266,
+      "validation_accuracy": 0.56
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.1586106704923842,
+      "validation_accuracy": 0.6004
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.0146574293136597,
+      "validation_accuracy": 0.6356
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.893900622982449,
+      "validation_accuracy": 0.6366
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.7963778604825338,
+      "validation_accuracy": 0.6568
+    }
+  ]
+}
