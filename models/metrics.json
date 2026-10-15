@@ -1,0 +1,18 @@
+{
+  "dataset_source": "uoft-cs/cifar10 mirror",
+  "seed": 42,
+  "device": "mps",
+  "epochs_run": 5,
+  "selected_epoch": 5,
+  "batch_size": 128,
+  "learning_rate": 0.001,
+  "train_samples": 45000,
+  "validation_samples": 5000,
+  "test": {
+    "loss": 1.005773154067993,
+    "accuracy": 0.65,
+    "samples": 10000
+  },
+  "training_and_evaluation_seconds": 95.23926225000002,
+  "parameter_count": 825398
+}

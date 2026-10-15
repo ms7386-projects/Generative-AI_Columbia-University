@@ -1,0 +1,72 @@
+[
+  {
+    "epoch": 1,
+    "train": {
+      "loss": 1.4823117303848266,
+      "accuracy": 0.46873333333333334,
+      "samples": 45000,
+      "seconds": 24.164467917000024
+    },
+    "validation": {
+      "loss": 1.2477221035003663,
+      "accuracy": 0.56,
+      "samples": 5000
+    }
+  },
+  {
+    "epoch": 2,
+    "train": {
+      "loss": 1.1586106704923842,
+      "accuracy": 0.5874,
+      "samples": 45000,
+      "seconds": 16.12072724999996
+    },
+    "validation": {
+      "loss": 1.1365194076538085,
+      "accuracy": 0.6004,
+      "samples": 5000
+    }
+  },
+  {
+    "epoch": 3,
+    "train": {
+      "loss": 1.0146574293136597,
+      "accuracy": 0.6419111111111111,
+      "samples": 45000,
+      "seconds": 14.53511241600006
+    },
+    "validation": {
+      "loss": 1.0397755647659301,
+      "accuracy": 0.6356,
+      "samples": 5000
+    }
+  },
+  {
+    "epoch": 4,
+    "train": {
+      "loss": 0.893900622982449,
+      "accuracy": 0.6883333333333334,
+      "samples": 45000,
+      "seconds": 15.345325917000082
+    },
+    "validation": {
+      "loss": 1.0426363663673401,
+      "accuracy": 0.6366,
+      "samples": 5000
+    }
+  },
+  {
+    "epoch": 5,
+    "train": {
+      "loss": 0.7963778604825338,
+      "accuracy": 0.7215555555555555,
+      "samples": 45000,
+      "seconds": 15.717371416999981
+    },
+    "validation": {
+      "loss": 1.0038216609954833,
+      "accuracy": 0.6568,
+      "samples": 5000
+    }
+  }
+]
