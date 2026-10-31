@@ -10,6 +10,9 @@ from fastapi import UploadFile, File
 
 from cnn_model import CNN
 from data_loader import image_transform, CLASSES
+from fastapi.responses import Response
+from torchvision.utils import save_image
+from gan_model import Generator
 
 app = FastAPI(
     title="SpaCy Word Embedding API",
@@ -137,3 +140,79 @@ def classify_image(file: UploadFile = File(...)):
         "class": CLASSES[class_id],
         "confidence": probabilities[0, class_id].item(),
     }
+
+# Load the trained generator once when the API starts.
+GAN_MODEL_PATH = (
+    Path(__file__).resolve().parent
+    / "models"
+    / "mnist_generator.pth"
+)
+
+gan_generator = Generator()
+
+gan_weights = torch.load(
+    GAN_MODEL_PATH,
+    map_location="cpu",
+    weights_only=True,
+)
+
+gan_generator.load_state_dict(gan_weights)
+gan_generator.eval()
+
+
+@app.get(
+    "/generate-digits",
+    response_class=Response,
+    responses={
+        200: {
+            "content": {"image/png": {}},
+            "description": "A grid of GAN-generated handwritten digits.",
+        }
+    },
+)
+def generate_digits(
+    num_samples: int = Query(
+        default=16,
+        ge=1,
+        le=64,
+        description="Number of images to generate, from 1 to 64.",
+    ),
+    seed: int = Query(
+        default=42,
+        ge=0,
+        le=2**32 - 1,
+        description="Random seed for reproducible generation.",
+    ),
+):
+    """Generate handwritten digit images using the trained GAN."""
+
+    # Use a local random generator for reproducible sampling.
+    random_generator = torch.Generator(device="cpu")
+    random_generator.manual_seed(seed)
+
+    noise = torch.randn(
+        num_samples,
+        100,
+        generator=random_generator,
+    )
+
+    # Generate images without updating model parameters.
+    with torch.inference_mode():
+        images = gan_generator(noise)
+
+    # Convert pixel values from [-1, 1] to [0, 1].
+    images = ((images + 1) / 2).clamp(0, 1)
+
+    # Encode the image grid as PNG in memory.
+    buffer = BytesIO()
+    save_image(
+        images,
+        buffer,
+        nrow=min(8, num_samples),
+        format="PNG",
+    )
+
+    return Response(
+        content=buffer.getvalue(),
+        media_type="image/png",
+    )

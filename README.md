@@ -1,4 +1,4 @@
-# Assignment 2: CNN Image Classification API
+# Generative AI Coursework API
 
 This project adds a CIFAR-10 image classifier to the existing FastAPI
 word-embedding service.
@@ -106,3 +106,101 @@ It will still choose one of these classes for unrelated images.
 Confidence is a softmax score, not a calibrated probability
 of correctness. Test-set accuracy does not guarantee the same
 performance on other real-world images.
+
+## Assignment 3: GAN Handwritten Digit Generation
+
+This assignment adds an MNIST GAN generator to the existing API.
+
+### GAN Architecture
+
+Generator:
+- Input: 100-dimensional noise vector
+- Linear: 100 to 128 x 7 x 7, followed by reshape
+- ConvTranspose2d: 128 to 64, kernel 4, stride 2, padding 1
+- BatchNorm2d and ReLU
+- ConvTranspose2d: 64 to 1, kernel 4, stride 2, padding 1
+- Tanh
+- Output: one 28 x 28 grayscale image per noise vector
+
+Discriminator:
+- Input: one 28 x 28 grayscale image
+- Conv2d: 1 to 64, kernel 4, stride 2, padding 1
+- LeakyReLU with negative slope 0.2
+- Conv2d: 64 to 128, kernel 4, stride 2, padding 1
+- BatchNorm2d and LeakyReLU with negative slope 0.2
+- Flatten, Linear from 128 x 7 x 7 to 1, and Sigmoid
+
+### Training
+
+- Dataset: MNIST training set, 60,000 images
+- Pixel normalization: [-1, 1]
+- Batch size: 128
+- Epochs: 10
+- Optimizer: Adam for both networks
+- Learning rate: 0.0002
+- Adam betas: (0.5, 0.999)
+- Loss: binary cross-entropy
+- Training device: Apple MPS
+- Random seed: 42
+
+Run from the project root in an environment with the required packages:
+
+```bash
+python gan_model.py
+python gan_data.py
+python train_gan.py
+```
+
+MNIST is downloaded automatically when needed.
+Running train_gan.py starts training from scratch and overwrites
+the previous GAN weights, history, and sample images.
+
+The trained generator weights are included in:
+models/mnist_generator.pth
+
+Epoch losses and training times are recorded in:
+models/gan_history.json
+
+These weights are for inference, not a complete training-resume checkpoint.
+No retraining is required to use the API.
+
+### Run the GAN API with Docker
+
+```bash
+docker build -t genai-gan-api .
+docker run --rm -p 8003:8000 genai-gan-api
+```
+
+The build requires internet access to install dependencies and the
+spaCy model. API inference uses the included weights on CPU.
+
+Open the API documentation:
+http://localhost:8003/docs
+
+Generate a PNG grid of 16 handwritten digit samples:
+http://localhost:8003/generate-digits?num_samples=16&seed=42
+
+Alternatively, save the response to a file:
+
+```bash
+curl --fail \
+  "http://localhost:8003/generate-digits?num_samples=16&seed=42" \
+  --output generated_digits.png
+```
+
+### Parameters and Verification
+
+GET /generate-digits returns one PNG containing a grid of samples.
+
+- num_samples: integer from 1 to 64; default 16
+- seed: integer from 0 to 4294967295; default 42
+
+The Docker endpoint was manually tested with 16 and 64 samples.
+A request with num_samples=65 was rejected with HTTP 422.
+
+### Limitations
+
+This is an unconditional GAN: users cannot select a specific digit.
+The seed controls random sampling, not the digit class.
+Some generated samples are ambiguous or malformed.
+GAN losses are training diagnostics, not image-quality accuracy scores.
